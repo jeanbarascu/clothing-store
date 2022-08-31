@@ -4,10 +4,10 @@ import {
   auth,
   signInUserWithEmailAndPassword,
   signInGoogleProviderRedirect,
-  createUserDocumentFromAuth,
 } from '../../utils/firebase/firebase.utils';
 import FormInput from '../form-input/form-input.component';
 import Button from '../button/button.component';
+
 import './sign-in-form.styles.scss';
 
 const defaultFormFields = {
@@ -17,6 +17,7 @@ const defaultFormFields = {
 
 const SignInForm = () => {
   const [formFields, setFormFields] = useState(defaultFormFields);
+
   const { email, password } = formFields;
 
   // Email/Password sign in
@@ -34,18 +35,25 @@ const SignInForm = () => {
     event.preventDefault();
 
     try {
-      const response = await signInUserWithEmailAndPassword(email, password);
-      console.log(response);
+      await signInUserWithEmailAndPassword(email, password);
       resetFormFields();
-    } catch (error) {}
+    } catch (error) {
+      switch (error.code) {
+        case 'auth/wrong-password':
+          alert('Invalid email or password!');
+          break;
+        default:
+          console.error('user sign in failed', error);
+      }
+    }
   };
 
   // Google sign in
   const signInWithGoogleRedirect = async () => {
-    const response = await getRedirectResult(auth);
-
-    if (response) {
-      await createUserDocumentFromAuth(response.user);
+    try {
+      await getRedirectResult(auth);
+    } catch (error) {
+      console.error('google sign in failed', error);
     }
   };
 
