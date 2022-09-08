@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
-import { fetchCategories } from '../../store/categories/categories.action';
+import { fetchCategoriesStart } from '../../store/categories/categories.action';
 
 import CategoriesPreview from '../../components/categories-preview/categories-preview.component';
 import Category from '../../components/category/category.component';
@@ -11,7 +11,7 @@ const Shop = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchCategories());
+    dispatch(fetchCategoriesStart());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
