@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
-import { getRedirectResult } from 'firebase/auth';
-import {
-  auth,
-  signInUserWithEmailAndPassword,
-  signInGoogleProviderRedirect,
-} from '../../utils/firebase/firebase.utils';
+import { useDispatch } from 'react-redux';
+import { signInGoogleProviderRedirect } from '../../utils/firebase/firebase.utils';
 import FormInput from '../form-input/form-input.component';
 import Button, { BUTTON_TYPE_CLASSES } from '../button/button.component';
 
 import { SignInContainer, ButtonsContainer } from './sign-in-form.styles';
+
+import {
+  googleSignInStart,
+  emailSignInStart,
+  signInSuccess,
+} from '../../store/user/user.action';
 
 const defaultFormFields = {
   email: '',
@@ -16,6 +18,7 @@ const defaultFormFields = {
 };
 
 const SignInForm = () => {
+  const dispatch = useDispatch();
   const [formFields, setFormFields] = useState(defaultFormFields);
 
   const { email, password } = formFields;
@@ -35,7 +38,7 @@ const SignInForm = () => {
     event.preventDefault();
 
     try {
-      await signInUserWithEmailAndPassword(email, password);
+      dispatch(emailSignInStart(email, password));
       resetFormFields();
     } catch (error) {
       switch (error.code) {
@@ -51,15 +54,22 @@ const SignInForm = () => {
   // Google sign in
   const signInWithGoogleRedirect = async () => {
     try {
-      await getRedirectResult(auth);
+      dispatch(googleSignInStart());
     } catch (error) {
       console.error('google sign in failed', error);
     }
   };
 
-  useEffect(() => {
-    signInWithGoogleRedirect();
-  }, []);
+  // useEffect(() => {
+  //   const getUserFromGoogle = async () => {
+  //     return signInGoogleProviderRedirect();
+  //   };
+
+  //   const { user } = getUserFromGoogle();
+
+  //   // dispatch(signInSuccess());
+  //   console.log(user);
+  // }, []);
 
   return (
     <SignInContainer>
@@ -89,7 +99,7 @@ const SignInForm = () => {
           <Button
             type="button"
             buttonType={BUTTON_TYPE_CLASSES.google}
-            onClick={signInGoogleProviderRedirect}
+            onClick={signInWithGoogleRedirect}
           >
             Google Sign in
           </Button>

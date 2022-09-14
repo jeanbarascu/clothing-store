@@ -4,6 +4,7 @@ import { Routes, Route } from 'react-router-dom';
 import {
   onAuthStateChangedListener,
   createUserDocumentFromAuth,
+  getCurrentUser,
 } from './utils/firebase/firebase.utils';
 import Home from './routes/home/home.components';
 import Shop from './routes/shop/shop.component';
@@ -16,14 +17,7 @@ const App = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChangedListener(async (user) => {
-      await createUserDocumentFromAuth(user);
-      dispatch(setCurrentUser(user));
-    });
-
-    // cleanup
-    return unsubscribe;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    getCurrentUser().then((user) => console.log(user));
   }, []);
 
   return (
